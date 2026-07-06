@@ -1,6 +1,16 @@
 const data = window.resumeData;
 const files = data.files;
 const email = (files["contact.md"].lines.find(l => l.startsWith("Email:")) || "").replace("Email: ", "").trim();
+const phone = (files["about.md"].lines.find(l => l.startsWith("- Phone:")) || "").replace("- Phone: ", "").trim();
+const linkedin = "https://linkedin.com/in/aaditya-hemant";
+
+function createCopyBtn(text) {
+  const btn = document.createElement("button");
+  btn.className = "copy-btn";
+  btn.dataset.copyText = text;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+  return btn;
+}
 
 const openTabs = ["about.md"];
 let activeFile = "about.md";
@@ -51,8 +61,16 @@ function renderEditor() {
   editorBody.classList.add("fading");
 
   window.setTimeout(() => {
-    const body = file.html && previewMode
-      ? `<div class="markdown-preview">${file.html}</div>`
+    let previewHtml = file.html;
+    if (previewHtml && previewMode) {
+      previewHtml = previewHtml.replace(
+        /(\+91 \d{10})/,
+        '<span data-copy-field="phone">$1</span>'
+      );
+    }
+
+    const body = previewHtml && previewMode
+      ? `<div class="markdown-preview">${previewHtml}</div>`
       : (file.code || file.lines).map((line, index) => renderLine(
           file.lines ? escapeHtml(line) : highlightCode(line), index
         )).join("");
@@ -60,15 +78,33 @@ function renderEditor() {
     editorBody.innerHTML = body;
     editorBody.classList.remove("fading");
 
-    // inject email copy button next to mailto link
     if (file.html && previewMode) {
+      // Email copy
       const mailto = editorBody.querySelector('a[href^="mailto:"]');
-      if (mailto && !mailto.nextElementSibling?.classList.contains("copy-email")) {
-        const btn = document.createElement("button");
-        btn.className = "copy-email";
-        btn.textContent = "copy";
-        mailto.after(btn);
+      if (mailto && !mailto.nextElementSibling?.classList.contains("copy-btn")) {
+        mailto.after(createCopyBtn(email));
       }
+
+      // Phone copy
+      const phoneEl = editorBody.querySelector('[data-copy-field="phone"]');
+      if (phoneEl && !phoneEl.nextElementSibling?.classList.contains("copy-btn")) {
+        phoneEl.after(createCopyBtn(phone));
+      }
+
+      // LinkedIn & GitHub copy
+      editorBody.querySelectorAll('a[href*="linkedin.com"], a[href*="github.com"]').forEach((link) => {
+        if (link.nextElementSibling?.classList.contains("copy-btn")) return;
+        link.after(createCopyBtn(link.href));
+      });
+
+      // Style PDF download links
+      editorBody.querySelectorAll('a[href$=".pdf"]').forEach((link) => {
+        link.setAttribute("download", "");
+        if (!link.classList.contains("dl-link")) {
+          link.className = "dl-link";
+          link.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> ${link.textContent}`;
+        }
+      });
     }
 
     document.querySelector("#fileType").textContent = file.language;
@@ -182,11 +218,13 @@ tabsEl.addEventListener("click", (event) => {
   setActiveFile(tab.dataset.tab);
 });
 
-document.querySelector(".folder-label").addEventListener("click", (event) => {
-  const folderFiles = event.currentTarget.nextElementSibling;
-  const isOpen = folderFiles.hidden;
-  folderFiles.hidden = !isOpen;
-  event.currentTarget.setAttribute("aria-expanded", String(isOpen));
+document.querySelectorAll(".folder-label").forEach((label) => {
+  label.addEventListener("click", () => {
+    const folderFiles = label.nextElementSibling;
+    const isOpen = !folderFiles.hidden;
+    folderFiles.hidden = isOpen;
+    label.setAttribute("aria-expanded", String(!isOpen));
+  });
 });
 
 document.querySelectorAll("[data-command]").forEach((button) => {
@@ -291,24 +329,28 @@ terminalInput.addEventListener("input", () => {
 });
 
 editorBody.addEventListener("click", async (event) => {
-  if (!event.target.matches(".copy-email")) return;
+  const copyBtn = event.target.closest(".copy-btn");
+  if (!copyBtn) return;
 
+  const text = copyBtn.dataset.copyText;
   if (navigator.clipboard) {
-    await navigator.clipboard.writeText(email);
+    await navigator.clipboard.writeText(text);
   } else {
     const selection = window.getSelection();
     const range = document.createRange();
-    range.selectNodeContents(event.target.previousElementSibling);
+    const prev = copyBtn.previousElementSibling;
+    if (prev) range.selectNodeContents(prev);
+    else range.selectNodeContents(copyBtn);
     selection.removeAllRanges();
     selection.addRange(range);
     document.execCommand("copy");
     selection.removeAllRanges();
   }
 
-  event.target.textContent = "copied";
-  window.setTimeout(() => {
-    event.target.textContent = "copy";
-  }, 1400);
+  const svg = copyBtn.querySelector("svg");
+  const orig = svg.innerHTML;
+  svg.innerHTML = `<polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+  window.setTimeout(() => { svg.innerHTML = orig; }, 1400);
 });
 
 mobileToggle.addEventListener("click", () => {

@@ -30,12 +30,10 @@ const education = read("education.md");
 
 const cachePlatform = readProject("cache-platform");
 const aiCli = readProject("ai-cli");
-const cmsMigration = readProject("cms-migration");
+const contentMigration = readProject("content-migration");
 const runClub = readProject("run-club");
 
-const backendSkill = read("skills/backend.ts");
-const cloudSkill = read("skills/cloud.ts");
-const aiSkill = read("skills/ai.ts");
+const skillsSource = read("skills/index.ts");
 
 // ── Build files object ─────────────────────────────────
 
@@ -117,10 +115,10 @@ files["education.md"] = {
 const projects = [
   {
     key: "projects/cache-platform.md",
-    name: "Cache Management Platform",
+    name: "Cache Operations Platform",
     data: cachePlatform,
-    termStack: "aws-lambda sqs step-functions akamai nodejs",
-    termResult: "99% reduction in manual effort, 200K+ live pages",
+    termStack: "aws-lambda step-functions sqs akamai aem elasticsearch newrelic",
+    termResult: "automated enterprise cache ops across multiple domains",
   },
   {
     key: "projects/ai-cli.md",
@@ -130,11 +128,11 @@ const projects = [
     termResult: "40% faster prototyping, parallel worktree workflows",
   },
   {
-    key: "projects/cms-migration.md",
-    name: "CMS Migration",
-    data: cmsMigration,
-    termStack: "akamai netstorage aem-dispatcher lambda",
-    termResult: "reduced AEM load, improved release stability",
+    key: "projects/content-migration.md",
+    name: "Content Migration Engine",
+    data: contentMigration,
+    termStack: "aws-lambda step-functions sqs s3 aem cf360",
+    termResult: "120K+ pages migrated, 98 component types",
   },
   {
     key: "projects/run-club.md",
@@ -180,14 +178,10 @@ for (const p of projects) {
 
 // Combine skills into a JSON display
 const skillsJson = (() => {
-  const combined = {};
   try {
     const parseTs = (src) => new Function(src.replace(/^export\s+const\s+\w+\s*=\s*/, "return ").replace(/;$/, ""))();
-    Object.assign(combined, parseTs(backendSkill));
-    Object.assign(combined, parseTs(cloudSkill));
-    Object.assign(combined, parseTs(aiSkill));
-  } catch {}
-  return combined;
+    return parseTs(skillsSource);
+  } catch { return {}; }
 })();
 
 files["skills.json"] = {
@@ -198,8 +192,11 @@ files["skills.json"] = {
     "$ jq '.cloud.aws' skills.json",
     '["Lambda", "Step Functions", "SQS", "API Gateway", "S3"]',
     "",
-    "$ jq '.backend.languages' skills.json",
+    "$ jq '.languages' skills.json",
     '["Python", "JavaScript", "TypeScript", "Go", "SQL"]',
+    "",
+    "$ jq '.expertise' skills.json",
+    '["Distributed Systems", "Serverless Architectures", "Event-Driven Systems", ...]',
   ],
 };
 
@@ -209,20 +206,22 @@ files["contact.md"] = {
   lines: [
     "# Contact",
     "",
+    "Phone: +91 9619654093",
     "Email: aadityahemant24@gmail.com",
     "LinkedIn: https://linkedin.com/in/aaditya-hemant",
     "GitHub: https://github.com/aaditya-hemant",
-    "Resume PDF: ./resume.pdf",
+    "[Download Resume](./resume.pdf)",
     "",
     "Open to software engineering, backend, platform, and distributed systems roles.",
   ],
   html: marked.parse([
     "# Contact",
     "",
+    "Phone: +91 9619654093",
     "Email: aadityahemant24@gmail.com",
     "LinkedIn: https://linkedin.com/in/aaditya-hemant",
     "GitHub: https://github.com/aaditya-hemant",
-    "Resume PDF: ./resume.pdf",
+    "[Download Resume](./resume.pdf)",
     "",
     "Open to software engineering, backend, platform, and distributed systems roles.",
   ].join("\n")),
@@ -233,6 +232,7 @@ files["contact.md"] = {
     "",
     "{",
     '  "email": "aadityahemant24@gmail.com",',
+    '  "phone": "+91 9619654093",',
     '  "linkedin": "https://linkedin.com/in/aaditya-hemant",',
     '  "github": "https://github.com/aaditya-hemant"',
     "}",
@@ -265,6 +265,16 @@ for (const k of Object.keys(files)) {
   if (k.startsWith("experience/") && !commands[`cat ${k}`]) {
     commands[`cat ${k}`] = k;
   }
+}
+
+// Copy resume PDF to root for download
+const srcPdf = path.join(details, "docs", "resume.pdf");
+const dstPdf = path.join(root, "resume.pdf");
+try {
+  fs.copyFileSync(srcPdf, dstPdf);
+  console.log("✓ resume.pdf copied to root");
+} catch (e) {
+  console.warn("⚠ resume.pdf not found at", srcPdf);
 }
 
 // ── Write data.js ──────────────────────────────────────
