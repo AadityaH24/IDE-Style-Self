@@ -1,0 +1,13 @@
+{
+  "operationalEffortReduction": "99%",
+  "livePagesManaged": 200000,
+  "releaseCoordinationTimeSaved": "4+ hours",
+  "teamsImpacted": "cross-team coordination",
+  "servicesUsed": [
+    "AWS Lambda",
+    "Amazon SQS",
+    "AWS Step Functions",
+    "Akamai CDN",
+    "Akamai NetStorage"
+  ]
+}

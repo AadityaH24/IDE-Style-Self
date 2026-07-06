@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Aaditya H Chattankatil - Resume</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell" aria-label="Resume IDE">
+      <header class="title-bar">
+        <div class="window-controls" aria-hidden="true">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+        <span class="window-title">Aaditya H Chattankatil - resume</span>
+      </header>
+
+      <button class="mobile-toggle" type="button" aria-expanded="false" aria-controls="fileTree">
+        FILES <span>menu</span>
+      </button>
+
+      <section class="workspace">
+        <aside class="sidebar" id="fileTree" aria-label="Resume files">
+          <p class="sidebar-title">FILES</p>
+          <nav class="file-tree" aria-label="File navigation">
+            <button class="file-item active" type="button" data-file="about.md">about.md</button>
+            <div class="folder">
+              <button class="folder-label" type="button" aria-expanded="true">experience/</button>
+              <div class="folder-files">
+                <button class="file-item" type="button" data-file="experience/bajaj-finserv.md">bajaj-finserv.md</button>
+                <button class="file-item" type="button" data-file="experience/atsuya.md">atsuya.md</button>
+              </div>
+            </div>
+            <button class="file-item" type="button" data-file="education.md">education.md</button>
+            <div class="folder">
+              <button class="folder-label" type="button" aria-expanded="true">projects/</button>
+              <div class="folder-files">
+                <button class="file-item" type="button" data-file="projects/cache-platform.md">cache-platform.md</button>
+                <button class="file-item" type="button" data-file="projects/ai-cli.md">ai-cli.md</button>
+                <button class="file-item" type="button" data-file="projects/cms-migration.md">cms-migration.md</button>
+                <button class="file-item" type="button" data-file="projects/run-club.md">run-club.md</button>
+              </div>
+            </div>
+            <button class="file-item" type="button" data-file="skills.json">skills.json</button>
+            <button class="file-item" type="button" data-file="contact.md">contact.md</button>
+          </nav>
+        </aside>
+
+        <section class="editor" aria-label="Editor pane">
+          <div class="tabs" id="tabs" role="tablist" aria-label="Open files"></div>
+          <article class="editor-body" id="editorBody" aria-live="polite"></article>
+        </section>
+
+        <aside class="terminal" aria-label="Terminal pane">
+          <div class="terminal-header">TERMINAL</div>
+          <div class="terminal-output" id="terminalOutput" aria-live="polite"></div>
+          <div class="terminal-actions" aria-label="Suggested commands">
+            <button type="button" data-command="whoami">whoami</button>
+            <button type="button" data-command="ls projects/">ls projects/</button>
+            <button type="button" data-command="cat resume.pdf">cat resume.pdf</button>
+          </div>
+          <div class="terminal-hint" id="terminalHint" role="status">
+            <div class="hint-body">
+              <p class="hint-title">try a command</p>
+              <div class="hint-commands">
+                <button type="button" data-hint-cmd="help">help</button>
+                <button type="button" data-hint-cmd="ls">ls</button>
+                <button type="button" data-hint-cmd="whoami">whoami</button>
+                <button type="button" data-hint-cmd="git log --oneline">git log --oneline</button>
+                <button type="button" data-hint-cmd="ls projects/">ls projects/</button>
+              </div>
+            </div>
+            <button class="hint-close" type="button" aria-label="Dismiss hint">&times;</button>
+          </div>
+          <form class="prompt" id="terminalForm" autocomplete="off">
+            <label for="terminalInput">$</label>
+            <input id="terminalInput" name="command" type="text" aria-label="Terminal command" spellcheck="false">
+            <span class="invalid-indicator" id="invalidIndicator" role="status" aria-live="polite">invalid command</span>
+          </form>
+        </aside>
+      </section>
+
+      <footer class="status-bar">
+        <div>
+          <span id="branchName">career/senior-backend</span>
+          <span id="fileEncoding">UTF-8</span>
+          <span id="fileType">Markdown</span>
+          <span id="cursorPosition">Ln 1, Col 1</span>
+        </div>
+        <a href="resume.pdf" download>resume.pdf</a>
+      </footer>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

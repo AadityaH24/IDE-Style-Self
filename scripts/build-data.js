@@ -1,0 +1,275 @@
+const fs = require("fs");
+const path = require("path");
+const { marked } = require("marked");
+
+marked.setOptions({ breaks: true });
+
+const root = path.resolve(__dirname, "..");
+const details = path.join(root, "public", "personal-details");
+
+function read(pathname) {
+  return fs.readFileSync(path.join(details, pathname), "utf-8").trimEnd();
+}
+
+function readProject(name) {
+  const dir = path.join(details, "projects", name);
+  const readme = fs.readFileSync(path.join(dir, "README.md"), "utf-8");
+  let arch = "";
+  try { arch = fs.readFileSync(path.join(dir, "architecture.md"), "utf-8"); } catch {}
+  let metrics = "";
+  try { metrics = fs.readFileSync(path.join(dir, "metrics.json"), "utf-8"); } catch {}
+  return { readme, arch, metrics };
+}
+
+const about = read("ABOUT.md");
+
+const expBajaj = read("experience/bajaj-finserv.md");
+const expAtsuya = read("experience/atsuya.md");
+
+const education = read("education.md");
+
+const cachePlatform = readProject("cache-platform");
+const aiCli = readProject("ai-cli");
+const cmsMigration = readProject("cms-migration");
+const runClub = readProject("run-club");
+
+const backendSkill = read("skills/backend.ts");
+const cloudSkill = read("skills/cloud.ts");
+const aiSkill = read("skills/ai.ts");
+
+// ── Build files object ─────────────────────────────────
+
+const files = {};
+
+files["about.md"] = {
+  type: "Markdown",
+  language: "Markdown",
+  lines: about.split("\n"),
+  html: marked.parse(about),
+  terminal: [
+    "> loading profile...",
+    "> status: online",
+    "",
+    "$ whoami",
+    "aaditya-hemant",
+    "",
+    "$ pwd",
+    "/resume/software-engineer",
+  ],
+};
+
+// ── Experience files ────────────────────────────────────
+
+const experienceFiles = [
+  {
+    key: "experience/bajaj-finserv.md",
+    content: expBajaj,
+    terminalLines: [
+      "$ git log --oneline",
+      "a81f203 senior-software-engineer at Bajaj Finserv",
+      "4c927be shipped cache management platform v2",
+      "d79a114 software-engineer at Bajaj Finserv",
+      "13fd982 sso-integration across partner apps",
+      "",
+      "career history loaded",
+    ],
+  },
+  {
+    key: "experience/atsuya.md",
+    content: expAtsuya,
+    terminalLines: [
+      "$ cat experience/atsuya.md",
+      "ml-intern at Atsuya Technologies",
+      "time-series forecasting & anomaly detection",
+      "",
+      "internship completed dec 2021",
+    ],
+  },
+];
+
+for (const exp of experienceFiles) {
+  files[exp.key] = {
+    type: "Markdown",
+    language: "Markdown",
+    lines: exp.content.split("\n"),
+    html: marked.parse(exp.content),
+    terminal: exp.terminalLines,
+  };
+}
+
+// ── Education file ──────────────────────────────────────
+
+files["education.md"] = {
+  type: "Markdown",
+  language: "Markdown",
+  lines: education.split("\n"),
+  html: marked.parse(education),
+  terminal: [
+    "$ cat education.md",
+    "VIT Chennai — BTech CSE (AI & ML), CGPA 9.01",
+    "Bhatia College — HSC Science",
+    "St. Joseph's — SSC",
+    "",
+    "education summary loaded",
+  ],
+};
+
+const projects = [
+  {
+    key: "projects/cache-platform.md",
+    name: "Cache Management Platform",
+    data: cachePlatform,
+    termStack: "aws-lambda sqs step-functions akamai nodejs",
+    termResult: "99% reduction in manual effort, 200K+ live pages",
+  },
+  {
+    key: "projects/ai-cli.md",
+    name: "AI CLI",
+    data: aiCli,
+    termStack: "python nodejs git github-actions ollama claude",
+    termResult: "40% faster prototyping, parallel worktree workflows",
+  },
+  {
+    key: "projects/cms-migration.md",
+    name: "CMS Migration",
+    data: cmsMigration,
+    termStack: "akamai netstorage aem-dispatcher lambda",
+    termResult: "reduced AEM load, improved release stability",
+  },
+  {
+    key: "projects/run-club.md",
+    name: "Run Club",
+    data: runClub,
+    termStack: "nextjs typescript tailwindcss netlify",
+    termResult: "40+ runners at launch, bi-weekly social runs",
+  },
+];
+
+for (const p of projects) {
+  const projLines = p.data.readme.split("\n");
+  if (p.data.arch) {
+    projLines.push("", "---", "", "# Architecture");
+    projLines.push(...p.data.arch.split("\n"));
+  }
+  if (p.data.metrics) {
+    projLines.push("", "---", "", "# Metrics");
+    try {
+      const m = JSON.parse(p.data.metrics);
+      projLines.push(JSON.stringify(m, null, 2));
+    } catch {
+      projLines.push(p.data.metrics);
+    }
+  }
+
+  files[p.key] = {
+    type: "Markdown",
+    language: "Markdown",
+    lines: projLines,
+    html: marked.parse(projLines.join("\n")),
+    terminal: [
+      `$ npm run build -- ${p.name.toLowerCase().replace(/\s+/g, "-")}`,
+      "compile... ok",
+      "validate... ok",
+      "deploy... ok",
+      "",
+      `stack: ${p.termStack}`,
+      `result: ${p.termResult}`,
+    ],
+  };
+}
+
+// Combine skills into a JSON display
+const skillsJson = (() => {
+  const combined = {};
+  try {
+    const parseTs = (src) => new Function(src.replace(/^export\s+const\s+\w+\s*=\s*/, "return ").replace(/;$/, ""))();
+    Object.assign(combined, parseTs(backendSkill));
+    Object.assign(combined, parseTs(cloudSkill));
+    Object.assign(combined, parseTs(aiSkill));
+  } catch {}
+  return combined;
+})();
+
+files["skills.json"] = {
+  type: "JSON",
+  language: "JSON",
+  code: JSON.stringify(skillsJson, null, 2).split("\n"),
+  terminal: [
+    "$ jq '.cloud.aws' skills.json",
+    '["Lambda", "Step Functions", "SQS", "API Gateway", "S3"]',
+    "",
+    "$ jq '.backend.languages' skills.json",
+    '["Python", "JavaScript", "TypeScript", "Go", "SQL"]',
+  ],
+};
+
+files["contact.md"] = {
+  type: "Markdown",
+  language: "Markdown",
+  lines: [
+    "# Contact",
+    "",
+    "Email: aadityahemant24@gmail.com",
+    "LinkedIn: https://linkedin.com/in/aaditya-hemant",
+    "GitHub: https://github.com/aaditya-hemant",
+    "Resume PDF: ./resume.pdf",
+    "",
+    "Open to software engineering, backend, platform, and distributed systems roles.",
+  ],
+  html: marked.parse([
+    "# Contact",
+    "",
+    "Email: aadityahemant24@gmail.com",
+    "LinkedIn: https://linkedin.com/in/aaditya-hemant",
+    "GitHub: https://github.com/aaditya-hemant",
+    "Resume PDF: ./resume.pdf",
+    "",
+    "Open to software engineering, backend, platform, and distributed systems roles.",
+  ].join("\n")),
+  terminal: [
+    "$ curl /api/contact",
+    "HTTP/1.1 200 OK",
+    "content-type: application/json",
+    "",
+    "{",
+    '  "email": "aadityahemant24@gmail.com",',
+    '  "linkedin": "https://linkedin.com/in/aaditya-hemant",',
+    '  "github": "https://github.com/aaditya-hemant"',
+    "}",
+  ],
+};
+
+// ── Build commands map ─────────────────────────────────
+
+const commands = {
+  whoami: "about.md",
+  "cat about.md": "about.md",
+  "git log --oneline": "experience/bajaj-finserv.md",
+  "cat experience/bajaj-finserv.md": "experience/bajaj-finserv.md",
+  "cat experience/atsuya.md": "experience/atsuya.md",
+  "cat education.md": "education.md",
+  "ls projects/": Object.keys(files).find((k) => k.startsWith("projects/")) || "projects/cache-platform.md",
+  "cat projects/cache-platform.md": "projects/cache-platform.md",
+  "cat projects/ai-cli.md": "projects/ai-cli.md",
+  "cat projects/cms-migration.md": "projects/cms-migration.md",
+  "cat skills.json": "skills.json",
+  "cat contact.md": "contact.md",
+  "cat resume.pdf": "contact.md",
+};
+
+// Add commands for all project and experience files
+for (const k of Object.keys(files)) {
+  if (k.startsWith("projects/") && !commands[`cat ${k}`]) {
+    commands[`cat ${k}`] = k;
+  }
+  if (k.startsWith("experience/") && !commands[`cat ${k}`]) {
+    commands[`cat ${k}`] = k;
+  }
+}
+
+// ── Write data.js ──────────────────────────────────────
+
+const output = `window.resumeData = ${JSON.stringify({ files, commands }, null, 2)};`;
+
+fs.writeFileSync(path.join(root, "data.js"), output, "utf-8");
+console.log("✓ data.js generated");
