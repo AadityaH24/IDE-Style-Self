@@ -32,6 +32,7 @@ const cachePlatform = readProject("cache-platform");
 const aiCli = readProject("ai-cli");
 const contentMigration = readProject("content-migration");
 const runClub = readProject("run-club");
+const ideResume = readProject("ide-resume");
 
 const skillsSource = read("skills/index.ts");
 
@@ -133,6 +134,13 @@ const projects = [
     data: contentMigration,
     termStack: "aws-lambda step-functions sqs s3 aem cf360",
     termResult: "120K+ pages migrated, 98 component types",
+  },
+  {
+    key: "projects/ide-resume.md",
+    name: "VSCode Portfolio",
+    data: ideResume,
+    termStack: "html css javascript marked nodejs github-pages",
+    termResult: "interactive IDE-themed resume, zero framework deps",
   },
   {
     key: "projects/run-club.md",

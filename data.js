@@ -374,6 +374,64 @@ window.resumeData = {
         "result: 120K+ pages migrated, 98 component types"
       ]
     },
+    "projects/ide-resume.md": {
+      "type": "Markdown",
+      "language": "Markdown",
+      "lines": [
+        "# VSCode Portfolio",
+        "",
+        "An interactive, IDE-themed resume built as a static single-page application. The site replicates the VS Code workspace layout — file tree sidebar, tabbed editor, and live terminal — to present professional experience in a format engineers instinctively understand.",
+        "",
+        "## Stack",
+        "",
+        "Vanilla HTML, CSS, JavaScript — no frameworks.",
+        "",
+        "## Architecture",
+        "",
+        "### Build pipeline",
+        "",
+        "```",
+        "public/personal-details/  →  scripts/build-data.js  →  data.js",
+        "   (markdown, TS skills)       (Node.js + marked)       (static bundle)",
+        "```",
+        "",
+        "Content lives as flat markdown files. A Node.js build script reads them at build time, renders markdown to HTML via `marked`, and produces a static `data.js` bundle. The browser loads only that bundle plus `script.js` — zero runtime dependencies.",
+        "",
+        "### Editor",
+        "",
+        "- File tree with collapsible folders and file-type icons (M for markdown, {} for JSON)",
+        "- Tabbed editor with Preview/Raw toggle for markdown files",
+        "- Copy buttons injected next to email, phone, LinkedIn, and GitHub links",
+        "- Open/Download resume buttons for the PDF",
+        "",
+        "### Terminal",
+        "",
+        "Not a real shell — contextual pre-scripted output per file (mock `npm run build`, `curl`, `jq`, etc.). Meta-commands (`ls`, `help`, `resume`, `contact`, `coffee`, `uptime`) echo directly into the terminal without switching files.",
+        "",
+        "### Skills",
+        "",
+        "Written as TypeScript object exports; parsed at build time with `new Function()` after stripping the export keyword. No TypeScript compiler needed.",
+        "",
+        "## Deployment",
+        "",
+        "GitHub Pages. Static files only — no server, no database.",
+        "",
+        "## Live Site",
+        "",
+        "https://aadityah24.github.io/IDE-Style-Self/",
+        ""
+      ],
+      "html": "<h1>VSCode Portfolio</h1>\n<p>An interactive, IDE-themed resume built as a static single-page application. The site replicates the VS Code workspace layout — file tree sidebar, tabbed editor, and live terminal — to present professional experience in a format engineers instinctively understand.</p>\n<h2>Stack</h2>\n<p>Vanilla HTML, CSS, JavaScript — no frameworks.</p>\n<h2>Architecture</h2>\n<h3>Build pipeline</h3>\n<pre><code>public/personal-details/  →  scripts/build-data.js  →  data.js\n   (markdown, TS skills)       (Node.js + marked)       (static bundle)\n</code></pre>\n<p>Content lives as flat markdown files. A Node.js build script reads them at build time, renders markdown to HTML via <code>marked</code>, and produces a static <code>data.js</code> bundle. The browser loads only that bundle plus <code>script.js</code> — zero runtime dependencies.</p>\n<h3>Editor</h3>\n<ul>\n<li>File tree with collapsible folders and file-type icons (M for markdown, {} for JSON)</li>\n<li>Tabbed editor with Preview/Raw toggle for markdown files</li>\n<li>Copy buttons injected next to email, phone, LinkedIn, and GitHub links</li>\n<li>Open/Download resume buttons for the PDF</li>\n</ul>\n<h3>Terminal</h3>\n<p>Not a real shell — contextual pre-scripted output per file (mock <code>npm run build</code>, <code>curl</code>, <code>jq</code>, etc.). Meta-commands (<code>ls</code>, <code>help</code>, <code>resume</code>, <code>contact</code>, <code>coffee</code>, <code>uptime</code>) echo directly into the terminal without switching files.</p>\n<h3>Skills</h3>\n<p>Written as TypeScript object exports; parsed at build time with <code>new Function()</code> after stripping the export keyword. No TypeScript compiler needed.</p>\n<h2>Deployment</h2>\n<p>GitHub Pages. Static files only — no server, no database.</p>\n<h2>Live Site</h2>\n<p><a href=\"https://aadityah24.github.io/IDE-Style-Self/\">https://aadityah24.github.io/IDE-Style-Self/</a></p>\n",
+      "terminal": [
+        "$ npm run build -- vscode-portfolio",
+        "compile... ok",
+        "validate... ok",
+        "deploy... ok",
+        "",
+        "stack: html css javascript marked nodejs github-pages",
+        "result: interactive IDE-themed resume, zero framework deps"
+      ]
+    },
     "projects/run-club.md": {
       "type": "Markdown",
       "language": "Markdown",
@@ -571,6 +629,7 @@ window.resumeData = {
     "cat contact.md": "contact.md",
     "cat resume.pdf": "contact.md",
     "cat projects/content-migration.md": "projects/content-migration.md",
+    "cat projects/ide-resume.md": "projects/ide-resume.md",
     "cat projects/run-club.md": "projects/run-club.md"
   }
 };
