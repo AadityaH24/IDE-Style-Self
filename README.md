@@ -158,6 +158,17 @@ No server required — `index.html` works as a static file.
 
 ---
 
+## License
+
+The source code in this repository is licensed under the MIT License. See the LICENSE file for details.
+
+## Portfolio Content
+
+While the source code is open source under the MIT License, the content of this portfolio—including my resume, work experience, project descriptions, achievements, images, and personal information—is © 2026 Aaditya H. All Rights Reserved.
+
+Please do not copy, reproduce, or represent my professional experience or written content as your own.
+---
+
 ## Inspiration
 
 Based on the **Split-pane editor** variant of the classic terminal-resume concept. Layout mirrors VS Code's three-column workspace: sidebar | editor | terminal.
