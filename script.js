@@ -97,13 +97,22 @@ function renderEditor() {
         link.after(createCopyBtn(link.href));
       });
 
-      // Style PDF download links
+      // Style PDF links: open in new tab + download icon
       editorBody.querySelectorAll('a[href$=".pdf"]').forEach((link) => {
-        link.setAttribute("download", "");
-        if (!link.classList.contains("dl-link")) {
-          link.className = "dl-link";
-          link.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> ${link.textContent}`;
-        }
+        if (link.classList.contains("dl-link")) return;
+        link.className = "dl-link";
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Open Resume`;
+        const dl = document.createElement("a");
+        dl.href = link.href;
+        dl.download = "";
+        dl.className = "dl-icon";
+        dl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+        dl.innerHTML += ` Download`;
+        dl.className = "dl-icon";
+        dl.title = "Download Resume";
+        link.after(dl);
       });
     }
 
@@ -138,19 +147,16 @@ function renderTerminal() {
   if (!hasShownHelp) {
     lines.push(
       "available commands:",
-      "  ls                  list file tree",
       "  help                show this help",
-      "  whoami              about me",
-      "  git log --oneline   career history",
+      "  ls                  list file tree",
       "  ls projects/        browse projects",
-      "  cat about.md",
-      "  cat experience/bajaj-finserv.md",
-      "  cat experience/atsuya.md",
-      "  cat education.md",
-      "  cat skills.json",
-      "  cat contact.md",
-      "  cat resume.pdf",
-      "  cat projects/<name> open any project",
+      "  ls experience/      browse experience",
+      "  whoami              about me",
+      "  resume              download resume",
+      "  contact             contact info",
+      "  coffee              ☕",
+      "  uptime              career uptime",
+      "  cat [file]          open any file",
       ""
     );
     hasShownHelp = true;
@@ -280,12 +286,16 @@ function generateFileTree() {
 
 function generateCommandsHelp() {
   return [
-    "  ls                  list file tree",
     "  help                show this help",
-    "  whoami              about me",
-    "  git log --oneline   career history",
+    "  ls                  list file tree",
     "  ls projects/        browse projects",
-    "  cat <file>          open any file",
+    "  ls experience/      browse experience",
+    "  whoami              about me",
+    "  resume              download resume",
+    "  contact             contact info",
+    "  coffee              ☕",
+    "  uptime              career uptime",
+    "  cat [file]          open any file",
   ].join("\n");
 }
 
@@ -303,6 +313,43 @@ function runCommand(command) {
   if (normalized === "help") {
     terminalInput.value = "";
     terminalOutput.innerHTML += `\n<span class="cmd">$ help</span>\n${generateCommandsHelp()}\n`;
+    terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    return true;
+  }
+
+  if (normalized === "resume") {
+    terminalInput.value = "";
+    terminalOutput.innerHTML += `\n<span class="cmd">$ resume</span>\nopening resume.pdf...\n`;
+    const link = document.querySelector('.status-bar a[download]') || document.querySelector('.dl-link');
+    if (link) link.click();
+    terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    return true;
+  }
+
+  if (normalized === "contact") {
+    terminalInput.value = "";
+    terminalOutput.innerHTML += `\n<span class="cmd">$ contact</span>\nPhone: +91 9619654093\nEmail: aadityahemant24@gmail.com\nWebsite: https://aadityah24.github.io/IDE-Style-Self/\nLinkedIn: https://linkedin.com/in/aaditya-hemant\nGitHub: https://github.com/aaditya-hemant\n`;
+    terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    return true;
+  }
+
+  if (normalized === "coffee") {
+    terminalInput.value = "";
+    terminalOutput.innerHTML += `\n<span class="cmd">$ coffee</span>\n☕ Brewing...\nCoffee acquired.\nProductivity +15%\n`;
+    terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    return true;
+  }
+
+  if (normalized === "uptime") {
+    terminalInput.value = "";
+    terminalOutput.innerHTML += `\n<span class="cmd">$ uptime</span>\nCareer Uptime\nSince Jan 2023\n3 Years 6 Months\nNo critical outages.\n`;
+    terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    return true;
+  }
+
+  if (normalized === "ls experience/") {
+    terminalInput.value = "";
+    terminalOutput.innerHTML += `\n<span class="cmd">$ ls experience/</span>\nexperience/\n├── bajaj-finserv.md\n└── atsuya.md\n`;
     terminalOutput.scrollTop = terminalOutput.scrollHeight;
     return true;
   }

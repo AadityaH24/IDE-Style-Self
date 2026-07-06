@@ -430,6 +430,24 @@ a {
   background: rgba(255,255,255,0.04);
   border-color: var(--text);
 }
+.dl-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 6px 10px;
+  margin-left: 4px;
+  font-size: 13px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.dl-icon:hover {
+  color: var(--text);
+  border-color: var(--text);
+  background: rgba(255,255,255,0.04);
+}
 
 .terminal {
   background: var(--terminal);

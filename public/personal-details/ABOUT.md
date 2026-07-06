@@ -6,7 +6,7 @@
 - Email: aadityahemant24@gmail.com
 - LinkedIn: [linkedin.com/in/aaditya-hemant](https://linkedin.com/in/aaditya-hemant)
 - GitHub: [github.com/aaditya-hemant](https://github.com/aaditya-hemant)
-- Location: Pune, India
+- Location: Pune, India | Open to Relocation
 - [Download Resume](./resume.pdf)
 
 ## Summary
